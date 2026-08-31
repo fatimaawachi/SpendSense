@@ -2,7 +2,7 @@
 
 ### Personal Receipt Price Tracking Assistant
 
-DealCheck Bahrain is a data science prototype that helps consumers track the prices they pay for everyday products over time.
+SpendSense Bahrain is a data science prototype that helps consumers track the prices they pay for everyday products over time.
 
 The application takes receipt information through an image, camera photo, video, or voice/manual input. A pretrained **EasyOCR** deep-learning model extracts text from receipts, after which Python parsing is used to identify product names and prices. The user can review and correct the extracted information before saving it to a personal purchase history.
 
