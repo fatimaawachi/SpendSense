@@ -1,115 +1,95 @@
 # SpendSense Bahrain 🛒
 
-### Personal Receipt Price Tracking Assistant
+### Smart Purchase & Price Tracking Assistant
 
-SpendSense Bahrain is a data science prototype that helps consumers track the prices they pay for everyday products over time.
+SpendSense Bahrain is a data science prototype designed to help consumers understand how the prices of the products they buy change over time.
 
-The application takes receipt information through an image, camera photo, video, or voice/manual input. A pretrained **EasyOCR** deep-learning model extracts text from receipts, after which Python parsing is used to identify product names and prices. The user can review and correct the extracted information before saving it to a personal purchase history.
+The application processes purchase information from receipts using a pretrained **EasyOCR** deep-learning model. It extracts information such as product names and prices from the receipt, then organizes the extracted information into structured purchase records.
 
-When the same product is purchased again, DealCheck Bahrain compares the new price with previous saved prices and identifies whether the item is **cheaper, similar, more expensive, or showing an unusual increase**.
+After the user reviews and confirms the extracted information, SpendSense stores the purchase history. When the user purchases the same product again, the application compares the current price with previously recorded prices and identifies whether the product has become **cheaper, similar in price, more expensive, or experienced an unusual increase**.
 
-> **Important:** The current prototype is a price-change tracking system. It does **not** claim to detect scams or prove fraud.
+The main goal is to give users a clearer view of their personal spending and how product prices change over time.
 
 ---
 
 ## 🎯 Problem
 
-Consumers may not notice when the prices of everyday products increase over time.
+Consumers often do not remember how much they previously paid for everyday products.
 
-Small changes can be difficult to remember because people purchase many different products at different times. Without a record of previous purchases, it is difficult to understand whether these changes are affecting overall spending.
+For example, a user might buy the same product several times:
 
-DealCheck Bahrain addresses this problem by turning receipt information into a personal price history that can be used for future comparisons.
+```text
+Previous purchase: 0.450 BHD
+Current purchase:  0.550 BHD
+```
+
+Without a purchase history, the user may not notice that the price has increased.
+
+SpendSense addresses this problem by extracting purchase information from receipts and building a personal history of product prices. This history can then be used to compare current purchases with previous ones.
 
 ---
 
 ## 💡 Solution
 
-The application follows four main steps:
+SpendSense follows a simple pipeline:
 
 1. **Capture**  
-   The user provides receipt information through an image, camera photo, video, or voice/manual input.
+   The user provides purchase information through a receipt image, camera input, video, or manual/voice input.
 
 2. **Extract**  
-   Pretrained EasyOCR detects and extracts text from the receipt.
+   A pretrained EasyOCR model detects and extracts text from the receipt.
 
-3. **Confirm & Save**  
-   The extracted product names and prices are displayed to the user. The user can correct OCR errors before the information is saved.
+3. **Identify**  
+   Python processing is used to organize the OCR output and identify product names and their corresponding prices.
 
-4. **Compare**  
-   New purchases are compared with previous prices stored in the user's purchase history.
+4. **Confirm**  
+   The user reviews the extracted information and corrects any OCR mistakes.
 
-### Overall workflow
+5. **Save**  
+   Confirmed purchases are stored in the user's purchase history.
+
+6. **Compare**  
+   When the same product is purchased again, SpendSense compares its current price with previous recorded prices.
+
+7. **Analyze**  
+   The system provides a simple price-change result to help the user understand how the price has changed.
+
+---
+
+## 🔄 Overall Workflow
 
 ```text
-Receipt Input
-     ↓
-EasyOCR
-     ↓
-Detected Text
-     ↓
-Python Row Parsing
-     ↓
-Product Name + Price
-     ↓
-User Review & Correction
-     ↓
-purchase_history.csv
-     ↓
-Compare With Previous Price
-     ↓
-Price Change Result
+Receipt / Purchase Information
+             ↓
+          EasyOCR
+             ↓
+       Extracted Text
+             ↓
+       Text Processing
+             ↓
+     Product + Price
+             ↓
+     User Confirmation
+             ↓
+      Purchase History
+             ↓
+     Find Previous Price
+             ↓
+   Compare Current Price
+             ↓
+       Price Change
+             ↓
+   Spending Insight
 ```
 
 ---
 
-## 🤖 Methodology
+## 🤖 Pretrained Model
 
-### Pretrained OCR Model
+### EasyOCR
 
-The main deep-learning component is **EasyOCR**, a pretrained OCR model.
+The main deep-learning component used in SpendSense is **EasyOCR**.
 
-OCR stands for **Optical Character Recognition**. It is used to detect text in an image and convert it into machine-readable text.
+EasyOCR is a pretrained **Optical Character Recognition (OCR)** model.
 
-For this prototype, EasyOCR is used without custom training or fine-tuning.
-
-The methodology is:
-
-```text
-Image / Camera / Video Frame
-          ↓
-     EasyOCR
-          ↓
-    Text Detection
-          ↓
-    Row Parsing
-          ↓
- Product + Price Extraction
-          ↓
-    User Confirmation
-          ↓
-       Storage
-```
-
-### What Kind of a pretrained model I used?
-
-I used EasyOCR, which is a pretrained deep-learning Optical Character Recognition (OCR) model. I used it to detect and extract text, especially product names and prices, from receipt images, camera photos, and video frames.
-
-
-### why?
-
-I used EasyOCR because receipts contain unstructured text, and I needed a way to automatically convert the information in the receipt image into machine-readable text. Using a pretrained model allowed me to use an existing deep-learning OCR system without training or fine-tuning a custom model for this prototype.
-
-
----
-
-## 📊 Data
-
-The project uses two main sources of data.
-
-### 1. OCR Receipt Dataset
-
-Receipt images are used to test the OCR and receipt-parsing workflow.
-
-### 2. User Purchase History
-
-Confirmed purchases become the
+OCR stands for **Optical Character Recognition**. It allows a computer to detect text inside an image and convert
