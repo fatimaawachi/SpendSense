@@ -845,7 +845,7 @@ items = st.data_editor(st.session_state["items"], column_config={"product_name":
                                                                  "confidence": st.column_config.NumberColumn("Confidence",disabled=True,)
                                                                  },num_rows="dynamic",
                                                                  hide_index=True,
-                                                                 use_container_width=True,
+                                                                 width="stretch",
                                                                  key="items_table")
 
 
