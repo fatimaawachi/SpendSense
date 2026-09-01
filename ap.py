@@ -1,7 +1,6 @@
 from datetime import date, timedelta
 from pathlib import Path
 
-import cv2
 import easyocr
 import numpy as np
 import pandas as pd
@@ -656,7 +655,7 @@ def check_supermarket_prices(product, price):
             best_score = score
             best_match = name
 
-    if best_match is None or best_score < 0.58:
+    if best_match is None or best_score < 0.40:
         return None
 
     product_row = data[data["Product Name"] == best_match].iloc[0]
@@ -906,6 +905,38 @@ items = items[items["product_name"].astype(str).str.strip() != ""]
 for _, item in items.iterrows():
     result = check_price(item["product_name"], float(item["price_bhd"]), history)
     supermarket_result = check_supermarket_prices(item["product_name"], float(item["price_bhd"]))
+    
+    st.markdown("#### 🛒 Compare prices with other supermarkets")
+    if supermarket_result is not None:
+        prices = supermarket_result["prices"]
+
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Al-Sater",f"{prices['Al-Sater']} BHD")
+        col2.metric("Al-Hali",f"{prices['Al-Hali']} BHD")
+        col3.metric("Lulu",f"{prices['Lulu']} BHD")
+
+        cheapest_store = supermarket_result["cheapest_store"]
+        cheapest_price = supermarket_result["cheapest_price"]
+        current_price = supermarket_result["current_price"]
+
+        if current_price > cheapest_price:
+            difference = round(current_price - cheapest_price, 3)
+            st.warning(f"💰 Cheaper at {cheapest_store}!")
+            st.write(f"You can save **{difference:.3f} BHD** "
+                     f"by buying it there.")
+
+        elif current_price == cheapest_price:
+            st.success("✅ Your current price is the cheapest!")
+
+        else:
+            difference = round(cheapest_price - current_price, 3)
+            st.success(f"🎉 Your current price is cheaper than "
+                       f"all the supermarket prices by {difference:.3f} BHD.")
+
+    else:
+        st.info("ℹ️ We could not find this product in the supermarket comparison database.")
+
+
 
     with st.container(border=True):
         st.markdown(f"### {item['product_name']}")
