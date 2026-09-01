@@ -836,7 +836,7 @@ if "items" not in st.session_state:
 if not st.session_state.get("raw", pd.DataFrame()).empty:
 
     with st.expander("OCR result"):
-        st.dataframe(st.session_state["raw"],hide_index=True, use_container_width=True)
+        st.dataframe(st.session_state["raw"],hide_index=True, width="stretch")
 
 
 st.subheader("Check the detected items")
@@ -938,7 +938,7 @@ else:
                         "purchase_date": st.column_config.DateColumn("Date"),
                         "product_name": st.column_config.TextColumn("Product"),
                         "price_bhd": st.column_config.NumberColumn("Price (BHD)")},hide_index=True,
-                                                                                    use_container_width=True,
+                                                                                    width="stretch",,
                                                                                     key="history_table")
 
     if st.button("Delete selected"):
