@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 from pathlib import Path
 
+import cv2
 import easyocr
 import numpy as np
 import pandas as pd
@@ -661,45 +662,21 @@ def check_supermarket_prices(product, price):
     product_row = data[data["Product Name"] == best_match].iloc[0]
 
     prices = {
-        "Al-Sater": product_row["Al-Sater Price (BHD)"],
-        "Al-Hali": product_row["Al-Hali Supermarket Price (BHD)"],
-        "Lulu": product_row["Lulu Hypermarket Price (BHD)"]
+        "Al-Sater": float(product_row["Al-Sater Price (BHD)"]),
+        "Al-Hali": float(product_row["Al-Hali Supermarket Price (BHD)"]),
+        "Lulu": float(product_row["Lulu Hypermarket Price (BHD)"])
     }
 
     cheapest_store = min(prices, key=prices.get)
-    cheapest_price = float(prices[cheapest_store])
+    cheapest_price = prices[cheapest_store]
 
-    if price > cheapest_price:
-        difference = round(price - cheapest_price, 3)
-
-        return {
-            "product": best_match,
-            "store": cheapest_store,
-            "price": cheapest_price,
-            "difference": difference,
-            "message": f"You can find this product cheaper at {cheapest_store}."
-        }
-
-    elif price == cheapest_price:
-        return {
-            "product": best_match,
-            "store": cheapest_store,
-            "price": cheapest_price,
-            "difference": 0,
-            "message": "This is the cheapest price among the supermarkets."
-        }
-
-    else:
-        difference = round(cheapest_price - price, 3)
-
-        return {
-            "product": best_match,
-            "store": "Current store",
-            "price": price,
-            "difference": difference,
-            "message": "Your current price is cheaper than the supermarket prices."
-        }
-
+    return {
+        "product": best_match,
+        "prices": prices,
+        "cheapest_store": cheapest_store,
+        "cheapest_price": cheapest_price,
+        "current_price": price
+    }
 
 
 
@@ -961,16 +938,63 @@ for _, item in items.iterrows():
         else:
             st.info(result["message"])
         
+        
         if supermarket_result is not None:
-            if supermarket_result["difference"] > 0:
-                st.warning(f"💰 Cheaper at {supermarket_result['store']}: "
-                           f"{supermarket_result['price']} BHD")
 
-                st.write(f"You could save "
-                         f"{supermarket_result['difference']} BHD.")
+           st.markdown("#### 🛒 Compare with other supermarkets")
 
-            else:
-                st.success("✅ This is the cheapest price among the supermarkets.")
+           prices = supermarket_result["prices"]
+
+           col1, col2, col3 = st.columns(3)
+
+           col1.metric(
+               "Al-Sater",
+               f"{prices['Al-Sater']} BHD"
+           )
+
+           col2.metric(
+               "Al-Hali",
+               f"{prices['Al-Hali']:} BHD"
+           )
+
+           col3.metric(
+               "Lulu",
+               f"{prices['Lulu']} BHD"
+           )
+
+           cheapest_store = supermarket_result["cheapest_store"]
+           cheapest_price = supermarket_result["cheapest_price"]
+           current_price = supermarket_result["current_price"]
+
+           if current_price > cheapest_price:
+
+               difference = round(current_price - cheapest_price, 3)
+
+               st.warning(
+                   f"💰 You can save {difference} BHD "
+                   f"by buying this product at {cheapest_store}."
+               )
+
+           elif current_price == cheapest_price:
+
+               st.success(
+                   f"✅ Your current price is the cheapest price."
+               )
+
+           else:
+
+               difference = round(cheapest_price - current_price, 3)
+
+               st.success(
+                   f"🎉 Your current price is cheaper than "
+                   f"the supermarket prices by {difference} BHD."
+               )
+
+        else:
+
+            st.info(
+                "ℹ️ This product was not found in the supermarket price database."
+            )
 
 
 if st.session_state.get("saved"):
