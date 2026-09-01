@@ -1,7 +1,6 @@
 from datetime import date, timedelta
 from pathlib import Path
 
-import cv2
 import easyocr
 import numpy as np
 import pandas as pd
@@ -142,6 +141,7 @@ hr {
 folder = Path(__file__).parent
 model_folder = folder / "easyocr_model"
 history_file = folder / "purchase_history.csv"
+supermarket_file = folder / "bahrain_supermarkets_1000_items_en.csv"
 
 columns = ["purchase_date",
             "product_name",
@@ -635,6 +635,74 @@ def similarity(a, b):
 
 
 
+def check_supermarket_prices(product, price):
+
+    if not supermarket_file.exists():
+        return None
+
+    try:
+        data = pd.read_csv(supermarket_file)
+    except:
+        return None
+
+    best_match = None
+    best_score = 0
+
+    for name in data["Product Name"]:
+        score = similarity(product, name)
+
+        if score > best_score:
+            best_score = score
+            best_match = name
+
+    if best_match is None or best_score < 0.58:
+        return None
+
+    product_row = data[data["Product Name"] == best_match].iloc[0]
+
+    prices = {
+        "Al-Sater": product_row["Al-Sater Price (BHD)"],
+        "Al-Hali": product_row["Al-Hali Supermarket Price (BHD)"],
+        "Lulu": product_row["Lulu Hypermarket Price (BHD)"]
+    }
+
+    cheapest_store = min(prices, key=prices.get)
+    cheapest_price = float(prices[cheapest_store])
+
+    if price > cheapest_price:
+        difference = round(price - cheapest_price, 3)
+
+        return {
+            "product": best_match,
+            "store": cheapest_store,
+            "price": cheapest_price,
+            "difference": difference,
+            "message": f"You can find this product cheaper at {cheapest_store}."
+        }
+
+    elif price == cheapest_price:
+        return {
+            "product": best_match,
+            "store": cheapest_store,
+            "price": cheapest_price,
+            "difference": 0,
+            "message": "This is the cheapest price among the supermarkets."
+        }
+
+    else:
+        difference = round(cheapest_price - price, 3)
+
+        return {
+            "product": best_match,
+            "store": "Current store",
+            "price": price,
+            "difference": difference,
+            "message": "Your current price is cheaper than the supermarket prices."
+        }
+
+
+
+
 
 
 
@@ -860,6 +928,7 @@ items = items[items["product_name"].astype(str).str.strip() != ""]
 
 for _, item in items.iterrows():
     result = check_price(item["product_name"], float(item["price_bhd"]), history)
+    supermarket_result = check_supermarket_prices(item["product_name"], float(item["price_bhd"]))
 
     with st.container(border=True):
         st.markdown(f"### {item['product_name']}")
@@ -891,6 +960,17 @@ for _, item in items.iterrows():
 
         else:
             st.info(result["message"])
+        
+        if supermarket_result is not None:
+            if supermarket_result["difference"] > 0:
+                st.warning(f"💰 Cheaper at {supermarket_result['store']}: "
+                           f"{supermarket_result['price']} BHD")
+
+                st.write(f"You could save "
+                         f"{supermarket_result['difference']} BHD.")
+
+            else:
+                st.success("✅ This is the cheapest price among the supermarkets.")
 
 
 if st.session_state.get("saved"):
