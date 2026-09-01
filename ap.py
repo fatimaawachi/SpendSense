@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 from pathlib import Path
 
+import cv2
 import easyocr
 import numpy as np
 import pandas as pd
