@@ -938,7 +938,7 @@ else:
                         "purchase_date": st.column_config.DateColumn("Date"),
                         "product_name": st.column_config.TextColumn("Product"),
                         "price_bhd": st.column_config.NumberColumn("Price (BHD)")},hide_index=True,
-                                                                                    width="stretch",,
+                                                                                    width="stretch",
                                                                                     key="history_table")
 
     if st.button("Delete selected"):
