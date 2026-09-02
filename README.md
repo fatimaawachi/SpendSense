@@ -3,7 +3,7 @@
 
 #### Data link: https://www.kaggle.com/datasets/sushmithanarayan/expenses-receipt-ocr
 #### App link: https://spendsense-fvstz7wr5adldkohpui3hp.streamlit.app
-#### Video link: 
+#### Video link: https://youtu.be/oEPdQFjR9jY
 
 ### Smart Purchase & Price Tracking Assistant
 
