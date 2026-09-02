@@ -1,5 +1,10 @@
 # SpendSense Bahrain 🛒
 
+
+#### Data link: https://www.kaggle.com/datasets/sushmithanarayan/expenses-receipt-ocr
+#### App link: https://spendsense-fvstz7wr5adldkohpui3hp.streamlit.app
+#### Video link: 
+
 ### Smart Purchase & Price Tracking Assistant
 
 SpendSense Bahrain is a data science prototype designed to help consumers understand how the prices of the products they buy change over time.
